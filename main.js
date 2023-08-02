@@ -17,8 +17,42 @@ message_convert['来了'] = '<img src="asserts/icons/09.png" />'
 message_convert['牛牛牛'] = '<img src="asserts/icons/10.png" />'
 message_convert['4分'] = '<img src="asserts/icons/11.png" />'
 message_convert['zzz'] = '<img src="asserts/icons/13.png" />'
+message_convert['世界名画'] = '<img src="asserts/icons/14.png" />'
+message_convert['kksk'] = '<img src="asserts/icons/15.png" />'
+message_convert['5kg'] = '<img src="asserts/icons/16.png" />'
+message_convert['単推'] = '<img src="asserts/icons/18.png" />'
+message_convert['yyds'] = '<img src="asserts/icons/19.png" />'
+message_convert['精神支柱'] = '<img src="asserts/icons/20.png" />'
+message_convert['[花丸晴琉_mua]'] = '<img src="asserts/icons/s01.png" />'
+message_convert['[花丸晴琉_wink]'] = '<img src="asserts/icons/s02.png" />'
+message_convert['[花丸晴琉_啊咧]'] = '<img src="asserts/icons/s03.png" />'
+message_convert['[花丸晴琉_大笑]'] = '<img src="asserts/icons/s04.png" />'
+message_convert['[花丸晴琉_呆住]'] = '<img src="asserts/icons/s05.png" />'
+message_convert['[花丸晴琉_对不起]'] = '<img src="asserts/icons/s06.png" />'
+message_convert['[花丸晴琉_好耶]'] = '<img src="asserts/icons/s07.png" />'
+message_convert['[花丸晴琉_挥手]'] = '<img src="asserts/icons/s08.png" />'
+message_convert['[花丸晴琉_惊慌]'] = '<img src="asserts/icons/s09.png" />'
+message_convert['[花丸晴琉_泪目]'] = '<img src="asserts/icons/s10.png" />'
+message_convert['[花丸晴琉_丧]'] = '<img src="asserts/icons/s11.png" />'
+message_convert['[花丸晴琉_生气]'] = '<img src="asserts/icons/s12.png" />'
+message_convert['[花丸晴琉_晚安]'] = '<img src="asserts/icons/s13.png" />'
+message_convert['[花丸晴琉_无语]'] = '<img src="asserts/icons/s14.png" />'
+message_convert['[花丸晴琉_喜欢]'] = '<img src="asserts/icons/s15.png" />'
+message_convert['[花丸晴琉_邪恶]'] = '<img src="asserts/icons/s16.png" />'
+message_convert['[花丸晴琉_疑惑]'] = '<img src="asserts/icons/s17.png" />'
+message_convert['[花丸晴琉_嘤嘤]'] = '<img src="asserts/icons/s18.png" />'
+message_convert['[花丸晴琉_赞]'] = '<img src="asserts/icons/s19.png" />'
+message_convert['[花丸晴琉_早安]'] = '<img src="asserts/icons/s20.png" />'
 
-function add_message(message) {
+function is_filtered(message) {
+    return message.startsWith('【♪') || message.startsWith('翻译【')
+}
+
+function add_message(message, metal) {
+    //Ignore the filtered message.
+    if(is_filtered(message)) {
+        return;
+    }
     //Search the message.
     if(message in message_convert) {
         message = message_convert[message]
@@ -27,6 +61,12 @@ function add_message(message) {
     const messageElement = document.createElement('div');
     messageElement.classList.add('message');
     messageElement.innerHTML = message;
+    if(metal[2] === "花丸晴琉Official") {
+        messageElement.insertAdjacentHTML("afterbegin", '<div class="metal"><div class="metal-label">花丸家</div><div class="metal-level">'+metal[0].toString()+'</div></div>')
+    }
+    if(messageContainer.children.length > window.innerHeight / 10) {
+        messageContainer.removeChild(messageContainer.firstElementChild)
+    }
     messageContainer.appendChild(messageElement);
 }
 
@@ -130,7 +170,7 @@ function wss_bilibili(room_id) {
                     if(data_cmd === "DANMU_MSG") {
                         // Extract the content and user id.
                         let pack_info = data_pack.info
-                        add_message(pack_info[1]);
+                        add_message(pack_info[1], pack_info[3]);
                     }
                 }
             }
