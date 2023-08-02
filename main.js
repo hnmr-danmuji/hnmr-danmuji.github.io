@@ -44,6 +44,8 @@ message_convert['[花丸晴琉_嘤嘤]'] = '<img src="asserts/icons/s18.png" />'
 message_convert['[花丸晴琉_赞]'] = '<img src="asserts/icons/s19.png" />'
 message_convert['[花丸晴琉_早安]'] = '<img src="asserts/icons/s20.png" />'
 
+let is_last_sc = false;
+
 function is_filtered(message) {
     return message.startsWith('【♪') || message.startsWith('翻译【')
 }
@@ -68,6 +70,88 @@ function add_message(message, metal) {
         messageContainer.removeChild(messageContainer.firstElementChild)
     }
     messageContainer.appendChild(messageElement);
+    is_last_sc = false;
+}
+
+function bilibili_pack(username, sc_price, sc_time, content, content_jp) {
+    let sc_content = content;
+    if(content_jp.length > 0) {
+        sc_content += '<br><br>自動翻訳：' + content_jp;
+    }
+    //Construct the SC price text.
+    let sc_price_text = "RMB￥" + String(sc_price) + " (" + sc_date_to_str(sc_time) + ")";
+    //Based on the price decide the level.
+    let sc_level = 'sc-0';
+    if(sc_price >= 2000) {
+        sc_level = 'sc-6';
+    } else if(sc_price >= 1000) {
+        sc_level = 'sc-5';
+    } else if(sc_price >= 500) {
+        sc_level = 'sc-4';
+    } else if(sc_price >= 100) {
+        sc_level = 'sc-3';
+    } else if(sc_price >= 50) {
+        sc_level = 'sc-2';
+    } else if(sc_price >= 30) {
+        sc_level = 'sc-1';
+    }
+    return {uname: username, price: sc_price_text, content: sc_content, level: sc_level}
+}
+
+function sc_date_to_str(cn_timestamp) {
+    let target_time = new Date(cn_timestamp * 1000);
+    // Format the time.
+    function formatNumber (n) {
+        n = n.toString();
+        return n[1] ? n : '0' + n;
+    }
+
+    return formatNumber(target_time.getFullYear()) + '-' +
+        formatNumber(target_time.getMonth() + 1) + '-' +
+        formatNumber(target_time.getDate()) + ' ' +
+        formatNumber(target_time.getHours()) + ':' +
+        formatNumber(target_time.getMinutes()) + ':' +
+        formatNumber(target_time.getSeconds());
+}
+
+function sc_create_message(name, price_text, content, color_level) {
+    // Construct the content body.
+    let html_content = (content.length === 0) ? '' : ['<div class="sc-content">', content, '</div>'].join('');
+    // Construct the div body.
+    return [
+        '<div class="sc-message '+color_level+'">',
+        '<div class="sc-header">',
+        '<div class="sc-name">'+name+'</div>',
+        '<div class="sc-amount">'+price_text+'</div>',
+        '</div>',
+        html_content,
+        '</div>'].join('');
+}
+
+let last_sc = {n: '', p: '', l: '', c: ''}
+
+function sc_insert(name, price_text, content, color_level) {
+    // Check is last record superchat?
+    if(is_last_sc) {
+        // Might we have to just update the last record.
+        if(last_sc.n === name && last_sc.p === price_text && last_sc.l === color_level) {
+            // Seem to be the one we found.
+            if (last_sc.c.length < content.length) {
+                //Need to update the SC.
+                last_sc.c = content;
+                //Get the last item from body.
+                messageContainer.lastElementChild.children[1].innerHTML = content;
+                return;
+            }
+        }
+    }
+    // Insert the SC content to the beginning of the div.
+    if(messageContainer.children.length > window.innerHeight / 10) {
+        messageContainer.removeChild(messageContainer.firstElementChild)
+    }
+    messageContainer.insertAdjacentHTML("beforeend", sc_create_message(name, price_text, content, color_level));
+    last_sc = {n: name, p: price_text, l: color_level, c: content}
+    is_last_sc = true;
 }
 
 function wss_bilibili(room_id) {
@@ -171,7 +255,24 @@ function wss_bilibili(room_id) {
                         // Extract the content and user id.
                         let pack_info = data_pack.info
                         add_message(pack_info[1], pack_info[3]);
+                    } else if (data_cmd === "SUPER_CHAT_MESSAGE") {
+                        const sc_info = data_pack.data;
+                        //Construct the data as expected.
+                        const msg_pack = bilibili_pack(sc_info.user_info.uname, sc_info.price, sc_info.start_time, sc_info.message, sc_info.message_trans);
+                        sc_insert(msg_pack.uname, msg_pack.price, msg_pack.content, msg_pack.level);
                     }
+                    // Bilibili has two types of SC info.
+                    // But it might come from only one payment.
+                    // The second one seems to create a translation,
+                    // however the first one also contains a translation field.
+                    // Why???
+
+                    // else if(data_cmd === "SUPER_CHAT_MESSAGE_JPN") {
+                    //     const sc_info = data_pack.data;
+                    //     const msg_pack = bilibili_pack(sc_info.user_info.uname, sc_info.price, sc_info.start_time, sc_info.message, sc_info.message_jpn);
+                    //     //Insert the content.
+                    //     sc_insert(msg_pack.uname, msg_pack.price, msg_pack.content, msg_pack.level);
+                    // }
                 }
             }
         };
