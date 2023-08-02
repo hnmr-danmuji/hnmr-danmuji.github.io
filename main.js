@@ -79,7 +79,7 @@ function bilibili_pack(username, sc_price, sc_time, content, content_jp) {
         sc_content += '<br><br>自動翻訳：' + content_jp;
     }
     //Construct the SC price text.
-    let sc_price_text = "RMB￥" + String(sc_price) + " (" + sc_date_to_str(sc_time) + ")";
+    let sc_price_text = "RMB￥" + String(sc_price);
     //Based on the price decide the level.
     let sc_level = 'sc-0';
     if(sc_price >= 2000) {
