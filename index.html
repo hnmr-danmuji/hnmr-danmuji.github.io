@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>花丸はれる弾幕機</title>
+    <script type="text/javascript" src="decode.js"></script>
+    <style>
+        html {
+            font-size: 16px;
+        }
+
+        @font-face {
+            font-family: danmufont;
+            src: url("asserts/fonts/NotoSansJP-Bold.ttf");
+        }
+
+        #danmaku-area img {
+            margin-top: 0.2em;
+            margin-bottom: 0.2em;
+            height: 2em;
+        }
+
+        #danmaku-area {
+            font-family: danmufont;
+            font-size: 1em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 -3px 2px #000000, /*上*/
+            2px -2px 2px #000000, /*右上*/
+            3px 0 2px #000000, /*右*/
+            2px 2px 2px #000000, /*右下*/
+            0 3px 2px #000000, /*下*/
+            -2px 2px 2px #000000, /*左下*/
+            -3px 0 2px #000000, /*左*/
+            -2px -2px 2px #000000; /*左上*/
+        }
+    </style>
+</head>
+<body id="danmaku-area" style="position: absolute; bottom: 0; left: 0; right: 0;">
+<script type="text/javascript" src="main.js"></script>
+<script type="text/javascript">
+    // Start listening live room.
+    wss_bilibili(21547895);
+</script>
+</body>
+</html>
