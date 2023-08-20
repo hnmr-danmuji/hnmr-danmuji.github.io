@@ -172,7 +172,6 @@ function member_insert(name, member_level) {
     if(messageContainer.children.length > window.innerHeight / 10) {
         messageContainer.removeChild(messageContainer.firstElementChild)
     }
-    console.log(member_create_message(name, member_level));
     messageContainer.insertAdjacentHTML("beforeend", member_create_message(name, member_level));
 }
 
