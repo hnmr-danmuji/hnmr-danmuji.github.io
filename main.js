@@ -154,6 +154,28 @@ function sc_insert(name, price_text, content, color_level) {
     is_last_sc = true;
 }
 
+function member_create_message(name, level) {
+    // Construct the content body.
+    let html_content = ['<div class="sc-content">欢迎&nbsp' + name + '&nbsp加入花丸晴琉的' + level + '！</div>'].join('');
+    // Construct the div body.
+    return [
+        '<div class="sc-message sc-member">',
+        '<div class="sc-header">',
+        '<div class="sc-name">欢迎新'+level+'</div>',
+        '</div>',
+        html_content,
+        '</div>'].join('');
+}
+
+function member_insert(name, member_level) {
+    // Insert the SC content to the beginning of the div.
+    if(messageContainer.children.length > window.innerHeight / 10) {
+        messageContainer.removeChild(messageContainer.firstElementChild)
+    }
+    console.log(member_create_message(name, member_level));
+    messageContainer.insertAdjacentHTML("beforeend", member_create_message(name, member_level));
+}
+
 function wss_bilibili(room_id) {
     let ws_heartbeat;
     let ws = new WebSocket("wss://broadcastlv.chat.bilibili.com:443/sub");
@@ -260,6 +282,10 @@ function wss_bilibili(room_id) {
                         //Construct the data as expected.
                         const msg_pack = bilibili_pack(sc_info.user_info.uname, sc_info.price, sc_info.start_time, sc_info.message, sc_info.message_trans);
                         sc_insert(msg_pack.uname, msg_pack.price, msg_pack.content, msg_pack.level);
+                    } else if (data_cmd === "GUARD_BUY") {
+                        member_insert(data_pack.data.username, data_pack.data.gift_name);
+                    } else {
+                        // console.log(data_pack)
                     }
                     // Bilibili has two types of SC info.
                     // But it might come from only one payment.
