@@ -5,6 +5,7 @@ function code_to_str(codes) {
 }
 
 let message_convert = {}
+//Hanamaru Icons
 message_convert[code_to_str([26217, 19978, 22909])] = '<img src="asserts/icons/01.png" />'
 message_convert['awsl'] = '<img src="asserts/icons/02.png" />'
 message_convert[code_to_str([29233, 24515])] = '<img src="asserts/icons/03.png" />'
@@ -43,6 +44,9 @@ message_convert['[花丸晴琉_疑惑]'] = '<img src="asserts/icons/s17.png" />'
 message_convert['[花丸晴琉_嘤嘤]'] = '<img src="asserts/icons/s18.png" />'
 message_convert['[花丸晴琉_赞]'] = '<img src="asserts/icons/s19.png" />'
 message_convert['[花丸晴琉_早安]'] = '<img src="asserts/icons/s20.png" />'
+//BiliBili icon mapping
+message_convert['赞'] = '<img src="asserts/icons/s19.png" />'
+message_convert['妙啊'] = '<img src="asserts/icons/s15.png" />'
 
 let is_last_sc = false;
 
